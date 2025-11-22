@@ -1,7 +1,14 @@
-resource "cloudflare_workers_route" "app_route" {
-  zone_id     = var.zone_id
-  pattern     = "example.com/*"
-  script_name = cloudflare_workers_script.app.script_name
+terraform {
+  required_providers {
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5.12"
+    }
+  }
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }
 
 locals {
@@ -14,8 +21,8 @@ resource "cloudflare_workers_script" "s3_worker" {
   account_id  = var.account_id
   script_name = "s3-cloudflare-worker"
 
-  content_file   = "${path.module}/../../s3-cloudflare-worker/dist/worker.js"
-  content_sha256 = filesha256("${path.module}/../../s3-cloudflare-worker/dist/worker.js")
+  content_file   = "${path.module}/../s3-cloudflare-worker/dist/worker.js"
+  content_sha256 = filesha256("${path.module}/../s3-cloudflare-worker/dist/worker.js")
   main_module    = "worker.js"
 
   compatibility_date = "2024-10-01"
@@ -58,8 +65,15 @@ resource "cloudflare_workers_script" "s3_worker" {
 
 
 resource "cloudflare_workers_route" "route" {
-  zone_id     = local.zone_id
-  pattern     = local.route
-  script_name = cloudflare_workers_script.s3_worker.script_name
+  zone_id = local.zone_id
+  pattern = local.route
+  script  = cloudflare_workers_script.s3_worker.script_name
+}
+
+
+
+module "cache" {
+  source     = "./rulesets"
+  zone_id    = local.zone_id
 }
 
