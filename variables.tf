@@ -1,15 +1,39 @@
-# variables.tf
-variable "cloudflare_api_token" {
-  type        = string
-  description = "API token with permission for Workers, Rulesets & Zone settings"
+variable "environment" {
+  type    = string
+  default = "uat"
 }
 
-variable "account_id" {
-  type        = string
-  description = "Cloudflare account ID"
+variable "uat_zone_id" {
+  type    = string
+  default = "a883d7a2b16b60376389450461b2364f"
 }
 
-variable "zone_id" {
-  type        = string
-  description = "Cloudflare zone ID"
+variable "prod_zone_id" {
+  type    = string
+  default = "a883d7a2b16b60376389450461b2364f"
+}
+
+variable "uat_route_pattern" {
+  type    = string
+  default = "uat-app.hayloarc.com/*"
+}
+
+variable "prod_route_pattern" {
+  type    = string
+  default = "app.hayloarc.com/*"
+}
+
+variable "uat_bucket_name" {
+  type = string
+  default = "uat-app.hayloarc.com"
+}
+
+variable "prod_bucket_name" {
+  type = string
+  default = "app.hayloarc.com"
+}
+
+variable "s3_region" {
+  type    = string
+  default = "us-east-1"
 }
