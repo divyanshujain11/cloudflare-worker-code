@@ -11,12 +11,6 @@ provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
 
-locals {
-  is_uat   = var.environment == "uat"
-  zone_id  = local.is_uat ? var.uat_zone_id : var.prod_zone_id
-  route    = local.is_uat ? var.uat_route_pattern : var.prod_route_pattern
-  bucket   = local.is_uat ? var.uat_bucket_name : var.prod_bucket_name
-}
 resource "cloudflare_workers_script" "s3_worker" {
   account_id  = var.account_id
   script_name = "s3-cloudflare-worker"
@@ -63,17 +57,28 @@ resource "cloudflare_workers_script" "s3_worker" {
   ]
 }
 
-
 resource "cloudflare_workers_route" "route" {
-  zone_id = local.zone_id
-  pattern = local.route
+  count   = var.environment == "uat" ? 1 : 0
+  zone_id = var.uat_zone_id
+  pattern = var.uat_route_pattern
   script  = cloudflare_workers_script.s3_worker.script_name
 }
 
-
-
-module "cache" {
-  source     = "./rulesets"
-  zone_id    = local.zone_id
+resource "cloudflare_workers_route" "route_prod" {
+  count   = var.environment == "prod" ? 1 : 0
+  zone_id = var.prod_zone_id
+  pattern = var.prod_route_pattern
+  script  = cloudflare_workers_script.s3_worker.script_name
 }
 
+module "cache_uat" {
+  source  = "./rulesets"
+  count   = var.environment == "uat" ? 1 : 0
+  zone_id = var.uat_zone_id
+}
+
+module "cache_prod" {
+  source  = "./rulesets"
+  count   = var.environment == "prod" ? 1 : 0
+  zone_id = var.prod_zone_id
+}

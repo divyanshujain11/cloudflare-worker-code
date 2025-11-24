@@ -40,6 +40,7 @@ variable "s3_region" {
 variable "account_id" {
   description = "Cloudflare account ID"
   type        = string
+  default
 }
 
 variable "aws_access_key_id" {
@@ -80,9 +81,4 @@ variable "cloudflare_api_token" {
   description = "Cloudflare API Token for provider authentication"
   type        = string
   sensitive   = true
-}
-
-variable "zone_id" {
-  description = "Zone ID to apply rulesets"
-  type        = string
 }
