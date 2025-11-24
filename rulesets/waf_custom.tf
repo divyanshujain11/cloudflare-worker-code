@@ -35,10 +35,11 @@ resource "cloudflare_ruleset" "waf_custom" {
       description = "Block abuse on /ads and /tracking endpoints"
       enabled     = true
       expression = <<EOT
-        (http.request.uri.path starts_with "/ads" or
-        http.request.uri.path starts_with "/tracking") and
-        not cf.client.bot
-        EOT
+      (
+        starts_with(http.request.uri.path, "/ads") or
+        starts_with(http.request.uri.path, "/tracking")
+      ) and not cf.client.bot
+      EOT
       action = "block"
     }
   ]

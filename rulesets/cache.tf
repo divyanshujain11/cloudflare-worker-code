@@ -50,13 +50,3 @@ resource "cloudflare_ruleset" "cache_rules" {
     }
   ]
 }
-
-
-
-
-
-
-
-
-
-
